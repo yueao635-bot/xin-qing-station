@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>心晴小站｜AI 心理健康關懷平台</title>
+<style>
+:root {
+  --site-primary: #477C70;
+  --site-on-primary: #FFFFFF;
+  --site-secondary: #E8F1EC;
+  --site-on-secondary: #24483F;
+  --site-background: #F6F8F5;
+  --site-on-background: #263B35;
+  --site-font-body: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --site-font-heading: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+  color-scheme: light dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--site-font-body); background: light-dark(#F6F8F5,#141C19); color: light-dark(#263B35,#E7F0EB); }
+#app { min-height: 100vh; width: 100%; background-color: var(--site-background); color: var(--site-on-background); border-radius: 0; }
+.hero { background: var(--site-primary); color: var(--site-on-primary); padding: 42px 22px 36px; position: relative; overflow: hidden; }
+.hero-inner, main, footer { width: min(960px, calc(100% - 36px)); margin: 0 auto; }
+.eyebrow { letter-spacing: .12em; font-size: .78rem; opacity: .85; font-weight: 700; }
+h1 { font-family: var(--site-font-heading); font-size: calc(2.3rem * var(--site-heading-scale)); margin: 10px 0 8px; line-height: 1.2; }
+.hero p { max-width: 640px; line-height: 1.8; margin: 0; opacity: .95; }
+.hero-mark { position: absolute; right: max(5%, calc((100% - 960px)/2)); top: 28px; font-size: 88px; opacity: .13; }
+main { padding: 28px 0 54px; }
+.tabs { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 22px; }
+.tab { border: 1px solid light-dark(#D6E2DA,#43564D); background: light-dark(#FFFFFF,#202B26); color: inherit; border-radius: 999px; padding: 10px 16px; cursor: pointer; font: inherit; font-size: .92rem; }
+.tab[aria-selected="true"] { background: var(--site-primary); color: var(--site-on-primary); border-color: var(--site-primary); }
+.panel { display: none; }
+.panel.active { display: block; }
+.card { background: light-dark(#FFFFFF,#202B26); border: 1px solid light-dark(#DFE8E1,#3A4B43); border-radius: calc(20px * var(--site-radius-scale)); padding: calc(24px * var(--site-spacing-scale)); margin-bottom: 18px; }
+h2 { font-size: calc(1.45rem * var(--site-heading-scale)); margin: 0 0 8px; }
+h3 { font-size: 1.06rem; margin: 0 0 8px; }
+.muted { color: light-dark(#61736A,#B1C1B8); line-height: 1.7; }
+.notice { background: light-dark(#F0F5F1,#26362F); border-left: 4px solid var(--site-primary); padding: 13px 15px; border-radius: 9px; line-height: 1.7; margin: 16px 0; font-size: .92rem; }
+.progress-wrap { height: 8px; background: light-dark(#E7EEE9,#35453D); border-radius: 99px; overflow: hidden; margin: 17px 0 22px; }
+.progress { height: 100%; width: 0%; background: var(--site-primary); transition: width .2s; }
+.question { padding: 17px 0; border-top: 1px solid light-dark(#E7ECE8,#3B4942); }
+.question:first-of-type { border-top: 0; }
+.q-title { font-weight: 700; line-height: 1.55; margin-bottom: 12px; }
+.options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.option { border: 1px solid light-dark(#D8E3DB,#46574E); border-radius: 12px; padding: 10px 7px; text-align: center; cursor: pointer; font-size: .87rem; background: light-dark(#FBFCFB,#1B2621); }
+.option input { position: absolute; opacity: 0; pointer-events: none; }
+.option:has(input:checked) { background: var(--site-secondary); border: 2px solid var(--site-primary); color: var(--site-on-secondary); font-weight: 700; padding: 9px 6px; }
+button.primary, button.secondary { border: 0; border-radius: 12px; padding: 12px 18px; font: inherit; font-weight: 700; cursor: pointer; }
+button.primary { background: var(--site-primary); color: var(--site-on-primary); }
+button.secondary { background: var(--site-secondary); color: var(--site-on-secondary); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.result-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin: 18px 0; }
+.result-item { background: light-dark(#F2F6F3,#26362F); border-radius: 13px; padding: 15px; }
+.result-item strong { display: block; margin-bottom: 5px; }
+.bar { height: 7px; border-radius: 99px; background: light-dark(#DDE7E0,#405148); overflow: hidden; margin-top: 9px; }
+.bar span { display: block; height: 100%; background: var(--site-primary); }
+.mood-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 9px; margin: 16px 0; }
+.mood { background: light-dark(#F7FAF7,#26362F); border: 1px solid light-dark(#DCE6DE,#46574E); border-radius: 14px; padding: 14px 5px; cursor: pointer; text-align: center; color: inherit; }
+.mood span { display: block; font-size: 1.8rem; margin-bottom: 6px; }
+.mood.selected { border: 2px solid var(--site-primary); background: var(--site-secondary); color: var(--site-on-secondary); }
+textarea { width: 100%; min-height: 105px; border: 1px solid light-dark(#D5E1D8,#46574E); background: light-dark(#FFFFFF,#19231E); color: inherit; border-radius: 12px; padding: 12px; font: inherit; resize: vertical; }
+.saved-note { padding: 12px 14px; background: var(--site-secondary); color: var(--site-on-secondary); border-radius: 11px; margin-top: 12px; }
+.resource { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 13px 0; border-top: 1px solid light-dark(#E7ECE8,#3B4942); }
+a { color: light-dark(#286B5A,#A6D6C5); font-weight: 700; }
+footer { padding: 0 0 30px; font-size: .83rem; color: light-dark(#6B7B72,#A6B5AC); line-height: 1.7; }
+@media (max-width: 620px) { .options { grid-template-columns: repeat(2,1fr); } .result-grid { grid-template-columns: 1fr; } .mood-grid { grid-template-columns: repeat(3,1fr); } h1 { font-size: calc(1.9rem * var(--site-heading-scale)); } .hero-mark { right: 12px; top: 10px; font-size: 64px; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">SDG 3 · GOOD HEALTH AND WELL-BEING</div>
+      <h1>心晴小站</h1>
+      <p>給自己一點時間，聽聽心裡的聲音。透過簡單的自我檢視與心情紀錄，練習照顧自己的心理健康。</p>
+    </div>
+    <div class="hero-mark" aria-hidden="true">☀</div>
+  </header>
+  <main>
+    <nav class="tabs" aria-label="網站功能">
+      <button class="tab" data-tab="check" aria-selected="true">📝 心理狀態檢視</button>
+      <button class="tab" data-tab="mood" aria-selected="false">🌱 每日心情紀錄</button>
+      <button class="tab" data-tab="care" aria-selected="false">💚 紓壓與求助資源</button>
+    </nav>
+
+    <section class="panel active" id="check">
+      <div class="card">
+        <h2>近期心理狀態自我檢視</h2>
+        <p class="muted">請回想最近兩週的整體狀態，選擇最接近自己的答案。共 12 題，完成後可查看各面向的回答摘要。</p>
+        <div class="notice">這是課堂專題設計的自我覺察示範題，並非經臨床驗證的心理量表，也不能用來診斷憂鬱症、焦慮症或其他疾病。答案只在目前頁面暫時整理，不會上傳或保存。</div>
+        <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+        <div id="questions"></div>
+        <div class="actions">
+          <button class="primary" id="showResult" disabled>查看自我檢視摘要</button>
+          <button class="secondary" id="resetQuiz">重新作答</button>
+        </div>
+      </div>
+      <div class="card" id="result" hidden aria-live="polite">
+        <h2>你的近期狀態摘要</h2>
+        <p class="muted">以下依照你選擇的答案整理各面向的頻率，協助你觀察近期生活狀態，不代表診斷或風險分級。</p>
+        <div class="result-grid" id="resultGrid"></div>
+        <h3>可以試試的小行動</h3>
+        <ul class="muted" id="tips"></ul>
+        <div class="notice">如果情緒困擾持續、加重，或已影響日常生活，建議與信任的人談談，並尋求心理師或醫療專業人員協助。</div>
+        <button class="secondary" id="again">再次檢視</button>
+      </div>
+    </section>
+
+    <section class="panel" id="mood">
+      <div class="card">
+        <h2>今天的心情如何？</h2>
+        <p class="muted">選一個最接近現在感受的表情，也可以寫下一件今天想記住的事。</p>
+        <div class="mood-grid" id="moodChoices">
+          <button class="mood" data-mood="很開心"><span>😄</span>很開心</button>
+          <button class="mood" data-mood="還不錯"><span>🙂</span>還不錯</button>
+          <button class="mood" data-mood="普通"><span>😐</span>普通</button>
+          <button class="mood" data-mood="有點低落"><span>😔</span>有點低落</button>
+          <button class="mood" data-mood="感到疲憊"><span>😣</span>感到疲憊</button>
+        </div>
+        <label for="moodNote"><strong>寫給自己的話（選填）</strong></label>
+        <textarea id="moodNote" placeholder="例如：今天完成了一件不容易的事……"></textarea>
+        <div class="actions"><button class="primary" id="saveMood" disabled>完成今日紀錄</button></div>
+        <div id="moodSaved" aria-live="polite"></div>
+        <p class="muted" style="font-size:.82rem">示範版不會儲存到伺服器或跨裝置保存；重新整理頁面後，紀錄會消失。請勿填寫姓名、電話等個人資料。</p>
+      </div>
+    </section>
+
+    <section class="panel" id="care">
+      <div class="card">
+        <h2>給自己的紓壓提案</h2>
+        <p class="muted">不需要一次做到很多，選一件現在做得到的小事就很好。</p>
+        <div class="result-grid">
+          <div class="result-item"><strong>🌬️ 慢慢呼吸</strong><span class="muted">吸氣 4 秒、吐氣 6 秒，重複幾次，讓身體慢下來。</span></div>
+          <div class="result-item"><strong>🚶 起身活動</strong><span class="muted">離開座位走一走、伸展肩頸，讓注意力暫時轉換。</span></div>
+          <div class="result-item"><strong>📵 暫時離線</strong><span class="muted">放下手機幾分鐘，喝水或看看窗外，給大腦休息。</span></div>
+          <div class="result-item"><strong>💬 找人聊聊</strong><span class="muted">向信任的朋友、家人或師長說說最近的感受。</span></div>
+        </div>
+        <h3>專業求助資源</h3>
+        <div class="resource"><div><strong>1925 安心專線</strong><div class="muted">衛福部 24 小時免付費心理諮詢</div></div><a href="https://dep.mohw.gov.tw/DOMHAOH/cp-4906-54077-107.html" target="_blank" rel="noopener">官方資訊 ↗</a></div>
+        <div class="resource"><div><strong>臺中市心理諮詢資源</strong><div class="muted">查詢在地心理諮商與支持服務</div></div><a href="https://www.gov.tw/News_Content_26_826198" target="_blank" rel="noopener">資源整理 ↗</a></div>
+        <div class="notice">若你或身邊的人正處於立即危險，請立即聯絡當地緊急服務或前往急診，不要只依賴網站測驗結果。</div>
+      </div>
+    </section>
+  </main>
+  <footer>心晴小站｜SDGs 3 健康與福祉課堂專題示範。此網站僅供健康教育與自我覺察，不提供診斷、治療或緊急危機評估。</footer>
+</div>
+<script>
+const groups = [
+  {name:'情緒感受', tip:'留意情緒起伏，試著用文字或談話表達感受。', qs:['最近兩週，我常感到心情低落或提不起勁。','最近兩週，我容易煩躁、緊張或感到不安。','最近兩週，我對原本喜歡的事情比較沒有興趣。']},
+  {name:'壓力與專注', tip:'把待辦事項拆成小步驟，安排短暫休息，避免一次承擔太多。', qs:['最近兩週，我覺得課業、工作或生活壓力難以負荷。','最近兩週，我常因擔心事情而難以放鬆。','最近兩週，我覺得注意力不容易集中。']},
+  {name:'睡眠與活力', tip:'試著固定睡眠時間，睡前減少使用手機，白天安排適度活動。', qs:['最近兩週，我入睡困難、容易醒來或睡醒仍疲倦。','最近兩週，我白天常覺得疲憊或缺乏精神。','最近兩週，我的作息不規律，影響日常生活。']},
+  {name:'支持與連結', tip:'找一位信任的人聊聊近況；需要時主動尋求學校或社區支持。', qs:['最近兩週，我覺得遇到困難時缺少可以傾訴的人。','最近兩週，我常想避開他人或減少社交互動。','最近兩週，我不太知道可以向誰尋求協助。']}
+];
+const scale = ['從未','偶爾','有時','經常'];
+const all = groups.flatMap((g,gi)=>g.qs.map((q,qi)=>({q,gi,qi})));
+const answers = {};
+const root = document.getElementById('questions');
+all.forEach((item,i)=>{
+  const div=document.createElement('div'); div.className='question';
+  const title=document.createElement('div'); title.className='q-title'; title.textContent=`${i+1}. ${item.q}`; div.appendChild(title);
+  const opts=document.createElement('div'); opts.className='options';
+  scale.forEach((label,v)=>{
+    const lab=document.createElement('label'); lab.className='option';
+    const input=document.createElement('input'); input.type='radio'; input.name=`q${i}`; input.value=v;
+    input.addEventListener('change',()=>{answers[i]=v; updateProgress();});
+    lab.append(input,document.createTextNode(label)); opts.appendChild(lab);
+  });
+  div.appendChild(opts); root.appendChild(div);
+});
+function updateProgress(){const n=Object.keys(answers).length; document.getElementById('progress').style.width=(n/all.length*100)+'%'; document.getElementById('showResult').disabled=n!==all.length;}
+function makeResult(){
+  const grid=document.getElementById('resultGrid'); grid.innerHTML=''; const tips=document.getElementById('tips'); tips.innerHTML='';
+  groups.forEach((g,gi)=>{
+    const vals=all.map((q,i)=>q.gi===gi?answers[i]:null).filter(v=>v!==null); const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const box=document.createElement('div'); box.className='result-item';
+    const strong=document.createElement('strong'); strong.textContent=g.name;
+    const p=document.createElement('div'); p.className='muted'; p.textContent=`所選頻率平均：${avg.toFixed(1)} / 3`;
+    const bar=document.createElement('div'); bar.className='bar'; const span=document.createElement('span'); span.style.width=(avg/3*100)+'%'; bar.appendChild(span);
+    box.append(strong,p,bar); grid.appendChild(box);
+    const li=document.createElement('li'); li.textContent=g.tip; tips.appendChild(li);
+  });
+  document.getElementById('result').hidden=false; document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('showResult').addEventListener('click',makeResult);
+function reset(){Object.keys(answers).forEach(k=>delete answers[k]); document.querySelectorAll('input[type=radio]').forEach(x=>x.checked=false); document.getElementById('result').hidden=true; updateProgress(); window.scrollTo({top:0,behavior:'smooth'});}
+document.getElementById('resetQuiz').addEventListener('click',reset); document.getElementById('again').addEventListener('click',reset);
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected','false')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); btn.setAttribute('aria-selected','true'); document.getElementById(btn.dataset.tab).classList.add('active');}));
+let chosenMood='';
+document.querySelectorAll('.mood').forEach(btn=>btn.addEventListener('click',()=>{chosenMood=btn.dataset.mood; document.querySelectorAll('.mood').forEach(b=>b.classList.toggle('selected',b===btn)); document.getElementById('saveMood').disabled=false;}));
+document.getElementById('saveMood').addEventListener('click',()=>{const note=document.getElementById('moodNote').value.trim(); const box=document.getElementById('moodSaved'); box.className='saved-note'; box.textContent=`今天的心情：${chosenMood}${note?'。給自己的話：'+note:''}。謝謝你花時間照顧自己。`;});
+</script>
+</body>
+</html>
